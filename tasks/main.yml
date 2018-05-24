@@ -20,13 +20,13 @@
     version: master
   register: beervpn_src
 
-# - pip:
-#     requirements: '{{ backend_directory }}/requirements.txt'
+- pip:
+    requirements: '{{ backend_directory }}/requirements.txt'
 
-- name: Install python dependencies
-  shell: "/usr/bin/pip3 install -r /opt/beervpn-backend/requirements.txt"
-  register: pip_install
-  changed_when: "pip_install.stdout is search('Installing collected packages')"
+# - name: Install python dependencies
+#   shell: "/usr/bin/pip3 install -r /opt/beervpn-backend/requirements.txt"
+#   register: pip_install
+#   changed_when: "pip_install.stdout is search('Installing collected packages')"
 
 - file:
     src: '{{ backend_directory }}/cmd.py'
