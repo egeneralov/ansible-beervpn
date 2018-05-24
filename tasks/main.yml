@@ -1,0 +1,77 @@
+---
+# tasks file for egeneralov.beervpn
+
+- name: Install system-wide dependencies
+  apt:
+    name: '{{ item }}'
+  with_items:
+    - git
+    - python3-pip
+
+- name: Ensure directory exist
+  file:
+    path: '{{ backend_directory }}'
+    state: directory
+
+- name: Get beervpn backend src
+  git:
+    repo: 'https://github.com/egeneralov/backend-beervpn.git'
+    dest: '{{ backend_directory }}'
+    version: master
+  register: beervpn_src
+
+# - pip:
+#     requirements: '{{ backend_directory }}/requirements.txt'
+
+- name: Install python dependencies
+  shell: "/usr/bin/pip3 install -r /opt/beervpn-backend/requirements.txt"
+  register: pip_install
+  changed_when: "pip_install.stdout is search('Installing collected packages')"
+
+- file:
+    src: '{{ backend_directory }}/cmd.py'
+    dest: /usr/local/sbin/beervpn
+    state: link
+    mode: 0644
+
+- name: Place systemd service
+  template:
+    src: '{{ item }}.j2'
+    dest: '/etc/systemd/system/{{ item }}'
+  with_items:
+    - beervpn-api.service
+    - beervpn-bot.service
+
+- name: Place bot configuration
+  template:
+    src: 'config.py.j2'
+    dest: '{{ backend_directory }}/config.py'
+  register: bot_config
+
+- name: Ensure service working
+  systemd:
+    name: '{{ item }}'
+    daemon-reload: yes
+    state: started
+  with_items:
+    - beervpn-api.service
+    - beervpn-bot.service
+  when: beervpn_src is not changed
+
+
+- name: Ensure service restarted
+  systemd:
+    name: '{{ item }}'
+    daemon-reload: yes
+    state: restarted
+  with_items:
+    - beervpn-api.service
+    - beervpn-bot.service
+  when: beervpn_src is changed or bot_config is changed
+
+
+
+
+
+# - iptables:
+

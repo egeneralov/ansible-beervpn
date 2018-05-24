@@ -1,0 +1,16 @@
+[Unit]
+Description=BeerVPN Telegram Bot
+
+[Service]
+Type=simple
+Restart=always
+
+WorkingDirectory={{ backend_directory }}
+# Environment=
+
+ExecStartPre=/usr/bin/printenv
+ExecStart=/usr/bin/python3 {{ backend_directory }}/bot.py tgbot
+
+[Install]
+WantedBy=multi-user.target
+

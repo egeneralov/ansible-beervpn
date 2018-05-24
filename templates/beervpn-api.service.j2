@@ -1,0 +1,16 @@
+[Unit]
+Description=BeerVPN api
+
+[Service]
+Type=simple
+Restart=always
+
+WorkingDirectory={{ backend_directory }}
+# Environment=
+
+ExecStartPre=/usr/bin/printenv
+ExecStart=/usr/bin/python3 {{ backend_directory }}/api.py
+
+[Install]
+WantedBy=multi-user.target
+
