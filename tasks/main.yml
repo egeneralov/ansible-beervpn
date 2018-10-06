@@ -20,6 +20,11 @@
     version: master
   register: beervpn_src
 
+- lineinfile:
+    path: /opt/beervpn-backend/api.py
+    regexp: ' ip = .*'
+    line: ' ip = {{ ansible_default_ipv4.address }}'
+
 - pip:
     requirements: '{{ backend_directory }}/requirements.txt'
 
